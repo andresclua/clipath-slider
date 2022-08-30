@@ -119,10 +119,10 @@
     transform: translate(-50%, -50%);
     border-radius: 50%;
     transition: clip-path 0s $slidingAT*0.7;
-    clip-path: circle($controlSize/2 at 120vw 50%);
+    clip-path: circle($controlSize*0.5 at 120vw 50%);
   
     &.s--prev {
-      clip-path: circle($controlSize/2 at 30vw 50%);
+      clip-path: circle($controlSize*0.5 at 30vw 50%);
     }
   
     &.s--active {

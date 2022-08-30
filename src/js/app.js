@@ -15,8 +15,11 @@ export default class Sketch {
             element.addEventListener('click',(event) => this.handleSlide(event) );
         });
     }
-    handleSlide(){
-        console.log('work!')
+    handleSlide(payload){
+        // if (this.isSliderPlaying) return;
+        // this.isSliderPlaying = true;
+        console.log(payload)
+        
     }
 
     init(){
@@ -81,11 +84,12 @@ export default class Sketch {
     }, slidingAT*0.75);
   };
     }
-  }
-  var config = {
+}
+
+var config = {
     parent:document.getElementById('clipSlider')
-  }
-  new Sketch(config)
+}
+new Sketch(config)
   
   
   

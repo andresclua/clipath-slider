@@ -550,8 +550,10 @@ class Sketch {
             element.addEventListener("click", (event)=>this.handleSlide(event));
         });
     }
-    handleSlide() {
-        console.log("work!");
+    handleSlide(payload) {
+        // if (this.isSliderPlaying) return;
+        // this.isSliderPlaying = true;
+        console.log(payload);
     }
     init() {
         var $slides = document.querySelectorAll(".slide");
