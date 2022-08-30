@@ -534,70 +534,57 @@ function hmrAcceptRun(bundle, id) {
 },{}],"8lRBv":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
+var _jsutil = require("@andresclua/jsutil");
+var _jsutilDefault = parcelHelpers.interopDefault(_jsutil);
 class Sketch {
     constructor(config){
+        this.JSUTIL = new (0, _jsutilDefault.default)();
         this.slides = document.querySelectorAll(".slide");
         this.slideControl = document.querySelectorAll(".slider__control");
         this.slidesCount = this.slides.length;
         this.sliderSpeed = 1300; // needs to match with SCSS Variable
         this.isSliderPlaying = false;
-        console.log("total", this.slidesCount);
         this.init();
         this.events();
     }
     events() {
         this.slideControl.forEach((element, index)=>{
-            element.addEventListener("click", (event)=>this.handleSlide(event));
+            element.addEventListener("click", (event)=>this.handleSlide({
+                    event: event,
+                    element: element
+                }));
         });
     }
     handleSlide(payload) {
-        // if (this.isSliderPlaying) return;
-        // this.isSliderPlaying = true;
-        console.log(payload);
+        // prevent double tap
+        if (this.isSliderPlaying) return;
+        this.isSliderPlaying = true;
+        // get right
+        var isRight = payload.element.classList.contains("m--right");
+        // get current active
+        var currentActive = document.querySelector(".slide.s--active");
+        var index = +currentActive.dataset.slide;
+        isRight ? index++ : index--;
+        if (index < 1) index = this.slidesCount;
+        if (index > this.slidesCount) index = 1;
+        var newActive = document.querySelector(".slide-" + index);
+        currentActive.classList.remove("s--active", "s--active-prev");
+        document.querySelector(".slide.s--prev").classList.remove("s--prev");
+        newActive.classList.add("s--active");
+        if (!isRight) newActive.classList.add("s--active-prev");
+        var prevIndex = index - 1;
+        if (prevIndex < 1) prevIndex = this.slidesCount;
+        document.querySelector(".slide-" + prevIndex).classList.add("s--prev");
+        setTimeout(()=>{
+            this.isSliderPlaying = false;
+        }, this.sliderSpeed * 0.5);
     }
     init() {
-        var $slides = document.querySelectorAll(".slide");
-        var $controls = document.querySelectorAll(".slider__control");
-        var numOfSlides = $slides.length;
-        var slidingAT = 1300; // sync this with scss variable
-        var slidingBlocked = false;
         this.slides.forEach((element, index)=>{
             var i = index + 1;
-            element.classList.add("slide-tf" + i);
+            element.classList.add("slide-" + i);
             element.dataset.slide = i;
         });
-        [].slice.call($slides).forEach(function($el, index) {
-            var i = index + 1;
-            $el.classList.add("slide-" + i);
-            $el.dataset.slide = i;
-        });
-        [].slice.call($controls).forEach(function($el) {
-            $el.addEventListener("click", controlClickHandler);
-        });
-        function controlClickHandler() {
-            if (slidingBlocked) return;
-            slidingBlocked = true;
-            var $control = this;
-            var isRight = $control.classList.contains("m--right");
-            var $curActive = document.querySelector(".slide.s--active");
-            var index = +$curActive.dataset.slide;
-            isRight ? index++ : index--;
-            if (index < 1) index = numOfSlides;
-            if (index > numOfSlides) index = 1;
-            var $newActive = document.querySelector(".slide-" + index);
-            $control.classList.add("a--rotation");
-            $curActive.classList.remove("s--active", "s--active-prev");
-            document.querySelector(".slide.s--prev").classList.remove("s--prev");
-            $newActive.classList.add("s--active");
-            if (!isRight) $newActive.classList.add("s--active-prev");
-            var prevIndex = index - 1;
-            if (prevIndex < 1) prevIndex = numOfSlides;
-            document.querySelector(".slide-" + prevIndex).classList.add("s--prev");
-            setTimeout(function() {
-                $control.classList.remove("a--rotation");
-                slidingBlocked = false;
-            }, slidingAT * 0.75);
-        }
     }
 }
 exports.default = Sketch;
@@ -606,7 +593,7 @@ var config = {
 };
 new Sketch(config);
 
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"1ncnq"}],"1ncnq":[function(require,module,exports) {
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"1ncnq","@andresclua/jsutil":"g3iME"}],"1ncnq":[function(require,module,exports) {
 exports.interopDefault = function(a) {
     return a && a.__esModule ? a : {
         default: a
@@ -636,6 +623,159 @@ exports.export = function(dest, destName, get) {
     });
 };
 
-},{}]},["7wCVa","8lRBv"], "8lRBv", "parcelRequire94c2")
+},{}],"g3iME":[function(require,module,exports) {
+module.exports = require("./src/js_helper");
+
+},{"./src/js_helper":"iC7g6"}],"iC7g6":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+class JSUTIL {
+    _getElements(id) {
+        if (typeof id == "object") return [
+            id
+        ];
+        else return document.querySelectorAll(id);
+    }
+    // .hide(selector)
+    hide(sel) {
+        this._hideElements(this._getElements(sel));
+    }
+    _hideElements(elements) {
+        var i, l = elements.length;
+        for(i = 0; i < l; i++)this._hideElement(elements[i]);
+    }
+    _hideElement(element) {
+        this._styleElement(element, "display", "none");
+    }
+    //.show(selector)
+    show(sel, a) {
+        var elements = this._getElements(sel);
+        if (a) this._hideElements(elements);
+        this._showElements(elements);
+    }
+    _showElements(elements) {
+        var i, l = elements.length;
+        for(i = 0; i < l; i++)this._showElement(elements[i]);
+    }
+    _showElement(element) {
+        this._styleElement(element, "display", "block");
+    }
+    //addStyle [element, property, value]
+    addStyle(sel, prop, val) {
+        this._styleElements(this._getElements(sel), prop, val);
+    }
+    _styleElements(elements, prop, val) {
+        var i, l = elements.length;
+        for(i = 0; i < l; i++)this._styleElement(elements[i], prop, val);
+    }
+    _styleElement(element, prop, val) {
+        element.style.setProperty(prop, val);
+    }
+    //toggleShow(selector)
+    toggleShow(sel) {
+        var i, x = this._getElements(sel), l = x.length;
+        for(i = 0; i < l; i++)if (x[i].style.display == "none") this._styleElement(x[i], "display", "block");
+        else this._styleElement(x[i], "display", "none");
+    }
+    // addClass(selector,'class')
+    addClass(sel, name) {
+        this._addClassElements(this._getElements(sel), name);
+    }
+    _addClassElements(elements, name) {
+        var i, l = elements.length;
+        for(i = 0; i < l; i++)this._addClassElement(elements[i], name);
+    }
+    _addClassElement(element, name) {
+        var i, arr1, arr2;
+        arr1 = element.className.split(" ");
+        arr2 = name.split(" ");
+        for(i = 0; i < arr2.length; i++)if (arr1.indexOf(arr2[i]) == -1) element.className += " " + arr2[i];
+    }
+    //removeClass(selector,'class')
+    removeClass(sel, name) {
+        this._removeClassElements(this._getElements(sel), name);
+    }
+    _removeClassElements(elements, name) {
+        var i, l = elements.length, arr1, arr2, j;
+        for(i = 0; i < l; i++)this._removeClassElement(elements[i], name);
+    }
+    _removeClassElement(element, name) {
+        var i, arr1, arr2;
+        arr1 = element.className.split(" ");
+        arr2 = name.split(" ");
+        for(i = 0; i < arr2.length; i++)while(arr1.indexOf(arr2[i]) > -1)arr1.splice(arr1.indexOf(arr2[i]), 1);
+        element.className = arr1.join(" ");
+    }
+    //ToggleClass('class')
+    toggleClass(sel, c1, c2) {
+        this._toggleClassElements(this._getElements(sel), c1, c2);
+    }
+    _toggleClassElements(elements, c1, c2) {
+        var i, l = elements.length;
+        for(i = 0; i < l; i++)this._toggleClassElement(elements[i], c1, c2);
+    }
+    _toggleClassElement(element, c1, c2) {
+        var t1, t2, t1Arr, t2Arr, j, arr, allPresent;
+        t1 = c1 || "";
+        t2 = c2 || "";
+        t1Arr = t1.split(" ");
+        t2Arr = t2.split(" ");
+        arr = element.className.split(" ");
+        if (t2Arr.length == 0) {
+            allPresent = true;
+            for(j = 0; j < t1Arr.length; j++)if (arr.indexOf(t1Arr[j]) == -1) allPresent = false;
+            if (allPresent) this._removeClassElement(element, t1);
+            else this._addClassElement(element, t1);
+        } else {
+            allPresent = true;
+            for(j = 0; j < t1Arr.length; j++)if (arr.indexOf(t1Arr[j]) == -1) allPresent = false;
+            if (allPresent) {
+                this._removeClassElement(element, t1);
+                this._addClassElement(element, t2);
+            } else {
+                this._removeClassElement(element, t2);
+                this._addClassElement(element, t1);
+            }
+        }
+    }
+    // BROWSER DETECTION
+    getBrowser(browser) {
+        switch(browser){
+            // CHROME 1+
+            case "chrome":
+                return navigator.userAgent.indexOf("Chrome") != -1 && !navigator.userAgent.match(/edg/i) || navigator.userAgent.indexOf("CriOS") >= 0;
+            // SAFARI 3.0+
+            case "safari":
+                return /^((?!chrome|android).)*safari/i.test(navigator.userAgent) && !(navigator.userAgent.indexOf("CriOS") >= 0);
+            // FIREFOX 1.0+
+            case "firefox":
+                return typeof InstallTrigger !== "undefined";
+            // INTERNET EXPLORER 6-11
+            case "ie":
+                return !!document.documentMode;
+            // EDGE 20+
+            case "edge":
+                return navigator.userAgent.match(/edg/i) || navigator.userAgent.indexOf("Edge/") != -1 ? true : false;
+            default:
+                return null;
+        }
+    }
+    getTypeDevice(system) {
+        var userAgent = navigator.userAgent || navigator.vendor || window.opera;
+        switch(system){
+            case "touch":
+                return "ontouchstart" in window || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0;
+            case "android":
+                return /android/i.test(userAgent);
+            case "ios":
+                return typeof navigator.standalone === "boolean";
+            default:
+                return null;
+        }
+    }
+}
+exports.default = JSUTIL;
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"1ncnq"}]},["7wCVa","8lRBv"], "8lRBv", "parcelRequire94c2")
 
 //# sourceMappingURL=index.59a40e7a.js.map
