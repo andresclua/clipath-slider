@@ -65,7 +65,7 @@ export default class Sketch {
 }
 
 var config = {
-    parent:document.getElementById('clipSlider')
+    parent:document.getElementById('clipSlider'),
 }
 new Sketch(config)
   
