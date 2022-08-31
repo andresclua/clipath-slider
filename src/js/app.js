@@ -5,7 +5,7 @@ export default class Sketch {
         this.JSUTIL = new JSUTIL();
         this.options = config;
         this.slides = document.querySelectorAll('.slide');
-        this.slideControl = document.querySelectorAll('.b--clip-slider-a__controls__item');
+       
         this.slideActiveClass = 'b--clip-slider-a__list-group__list-item--is-active';
         this.slideActiveClassPrev = 'b--clip-slider-a__list-group__list-item--prev';
         this.dotActiveClass = 'b--clip-slider-a__pagination__item--is-active';
@@ -28,7 +28,33 @@ export default class Sketch {
         if(this.options.dots){
             this.addDots()
         }
- 
+        // if controlls where selected create pagination
+        if(this.options.controls){
+            this.addControls()
+        }
+    }
+    addControls(){
+        // add comment div
+        let comment = document.createComment(" add controls");
+        this.options.parent.appendChild(comment);
+
+        // add parent ul
+        let controls = document.createElement("div");
+        controls.setAttribute("class", "b--clip-slider-a__controls");
+        this.options.parent.appendChild(controls);
+        for (let i = 0; i < 2; i++) {
+            var button = document.createElement("button");
+            button.setAttribute("class", "b--clip-slider-a__controls__item" );
+            if(i == 0){
+                this.JSUTIL.addClass(button, 'b--clip-slider-a__controls__item--prev');
+                button.innerHTML = 'Prev';
+            }else{
+                this.JSUTIL.addClass(button, 'b--clip-slider-a__controls__item--next');
+                button.innerHTML = 'Next';
+
+            }
+            controls.appendChild(button);
+        }
     }
     addDots(){
         // add comment div
@@ -51,9 +77,12 @@ export default class Sketch {
         
     }
     events(){
-        this.slideControl.forEach((element,index)=>{
-            element.addEventListener('click',(event) => this.handleSlide({event:event,element:element}) );
-        });
+        if(this.options.controls){
+            this.slideControl = document.querySelectorAll('.b--clip-slider-a__controls__item');
+            this.slideControl.forEach((element,index)=>{
+                element.addEventListener('click',(event) => this.handleSlide({event:event,element:element}) );
+            });
+        }
         
         if(this.options.dots){
             this.dotControl = document.querySelectorAll('.'  + this.dotItem );
@@ -109,7 +138,6 @@ export default class Sketch {
     }
     
     handleSlide(payload){
-        console.log(payload);
         // prevent double tap
         if (this.isSliderPlaying) return;
         this.isSliderPlaying = true;
