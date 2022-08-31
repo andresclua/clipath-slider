@@ -51,7 +51,9 @@
       }
       // controls
       &__controls{
-        
+        &:hover {
+          background-color: #2da6ff;
+        }
         &__item{
           z-index: 50;
           position:absolute;
@@ -61,6 +63,11 @@
           &--prev{
             background:magenta;
             left:20%;
+            transform-origin: 1px 0;
+            transform: rotate(45deg);
+            &:nth-child(2) {
+              transform: translateY(1px) rotate(135deg);
+            }
           }
           &--next{
             left: 90%;
