@@ -15,7 +15,6 @@ export default class Sketch {
         this.registerSwipe();
     }
     init(){
-
         // Create all slides with default configuration
         this.slides.forEach((element,index)=>{
             var i = index + 1;
@@ -33,18 +32,19 @@ export default class Sketch {
         // add comment div
         let comment = document.createComment(" add pagination");
         this.options.parent.appendChild(comment);
+        this.dotActiveClass = "b--clip-slider-a__pagination__item--is-active";
 
         // add parent ul
         let ul = document.createElement("ul");
         ul.setAttribute("id", "pagination");
-        ul.setAttribute("class", "pagination");
+        ul.setAttribute("class", "b--clip-slider-a__pagination");
         this.options.parent.appendChild(ul);
         for (let i = 0; i <this.slidesCount; i++) {
             var li = document.createElement("li");
-            li.setAttribute("class", "pagination-item");
+            li.setAttribute("class", "b--clip-slider-a__pagination__item");
             li.setAttribute("data-dot",  parseInt(i + 1) );
             if(i == 0)
-                this.JSUTIL.addClass(li,"pagination-item--active");
+                this.JSUTIL.addClass(li,this.dotActiveClass);
             ul.appendChild(li);
         }
         
@@ -55,7 +55,7 @@ export default class Sketch {
         });
         
         if(this.options.dots){
-            this.dotControl = document.querySelectorAll('.pagination-item');
+            this.dotControl = document.querySelectorAll('.b--clip-slider-a__pagination__item');
             this.dotControl.forEach((element,index)=>{
                 element.addEventListener('click',(event) => this.goToSlide({event:event,element:element, clickedDot:index}) );
             });
@@ -65,20 +65,21 @@ export default class Sketch {
         // prevent double tap
         if (this.isSliderPlaying) return;
         this.isSliderPlaying = true;
-    
+        this.slideActiveClass = 'b--clip-slider-a__list-group__list-item--is-active';
+
         // get right
         var isRight = payload.element.classList.contains('m--right');
         // get current active
-        var currentActive = document.querySelector('.slide.s--active');
-        var currentDot = document.querySelector('.pagination-item--active');
-        this.JSUTIL.removeClass(currentDot,"pagination-item--active");
+        var currentActive = document.querySelector('.slide.' + this.slideActiveClass);
+        var currentDot = document.querySelector('.' + this.dotActiveClass);
+        this.JSUTIL.removeClass(currentDot, this.dotActiveClass);
 
         var index = payload.clickedDot + 1;
         var newActive = document.querySelector('.slide-' + index);
-        this.JSUTIL.addClass(payload.element,"pagination-item--active");
+        this.JSUTIL.addClass(payload.element, this.dotActiveClass);
 
         // currentActive.classList.remove('s--active', 's--active-prev');
-        this.JSUTIL.removeClass(currentActive,'s--active', 's--active-prev');
+        this.JSUTIL.removeClass(currentActive,this.slideActiveClass, 's--active-prev');
         this.JSUTIL.removeClass( document.querySelector('.slide.s--prev'),'s--prev');
 
         this.JSUTIL.addClass( newActive,'s--active');
@@ -91,10 +92,6 @@ export default class Sketch {
         setTimeout(()=>{
             this.isSliderPlaying = false;
         },this.sliderSpeed*0.5)
-        
-    }
-    handlePlagination(payload){
-        console.log(payload)
     }
     
     handleSlide(payload){
@@ -104,11 +101,11 @@ export default class Sketch {
     
         // get right
         console.log(payload.element);
-        var isRight = payload.element.classList.contains('m--right');
+        var isRight = payload.element.classList.contains('b--clip-slider-a__controls__item--next');
         
         // get current active
         var currentActive = document.querySelector('.slide.s--active');
-        var currentDotActive = document.querySelector('.pagination-item--active');
+        var currentDotActive = document.querySelector('.' + this.dotActiveClass);
 
         var index = +currentActive.dataset.slide;
         (isRight) ? index++ : index--;
@@ -118,13 +115,11 @@ export default class Sketch {
         var dotActive = document.querySelector('[data-dot="' + index + '"]' );
         this.JSUTIL.removeClass(  currentActive,'s--active', 's--active-prev');
         this.JSUTIL.removeClass(  document.querySelector('.slide.s--prev'),'s--prev');
-        this.JSUTIL.removeClass( currentDotActive,'pagination-item--active');
+        this.JSUTIL.removeClass( currentDotActive, this.dotActiveClass);
 
         this.JSUTIL.addClass( newActive,'s--active');
-        this.JSUTIL.addClass( dotActive,'pagination-item--active');
+        this.JSUTIL.addClass( dotActive, this.dotActiveClass);
         if (!isRight) this.JSUTIL.addClass( newActive,'s--active-prev');
-      
-
 
         var prevIndex = index - 1;
         if (prevIndex < 1) prevIndex = this.slidesCount;
@@ -151,12 +146,12 @@ export default class Sketch {
 
                 if (this.directions.left) { // goes to next
                     this.handleSlide({
-                        element : document.querySelector('.m--right')
+                        element : document.querySelector('.b--clip-slider-a__controls__item--next')
                     });
                 }
                 if (this.directions.right) { // goes to previous
                     this.handleSlide({
-                        element : document.querySelector('.m--left')
+                        element : document.querySelector('.b--clip-slider-a__controls__item--prev')
                     });
                 }
             });
@@ -167,6 +162,7 @@ export default class Sketch {
 var config = {
     parent:document.getElementById('clipSlider'),
     dots:true,
+    controls : true
 }
 new Sketch(config)
   

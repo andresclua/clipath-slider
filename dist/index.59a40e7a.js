@@ -565,16 +565,17 @@ class Sketch {
         // add comment div
         let comment = document.createComment(" add pagination");
         this.options.parent.appendChild(comment);
+        this.dotActiveClass = "b--clip-slider-a__pagination__item--is-active";
         // add parent ul
         let ul = document.createElement("ul");
         ul.setAttribute("id", "pagination");
-        ul.setAttribute("class", "pagination");
+        ul.setAttribute("class", "b--clip-slider-a__pagination");
         this.options.parent.appendChild(ul);
         for(let i = 0; i < this.slidesCount; i++){
             var li = document.createElement("li");
-            li.setAttribute("class", "pagination-item");
+            li.setAttribute("class", "b--clip-slider-a__pagination__item");
             li.setAttribute("data-dot", parseInt(i + 1));
-            if (i == 0) this.JSUTIL.addClass(li, "pagination-item--active");
+            if (i == 0) this.JSUTIL.addClass(li, this.dotActiveClass);
             ul.appendChild(li);
         }
     }
@@ -586,7 +587,7 @@ class Sketch {
                 }));
         });
         if (this.options.dots) {
-            this.dotControl = document.querySelectorAll(".pagination-item");
+            this.dotControl = document.querySelectorAll(".b--clip-slider-a__pagination__item");
             this.dotControl.forEach((element, index)=>{
                 element.addEventListener("click", (event)=>this.goToSlide({
                         event: event,
@@ -600,17 +601,18 @@ class Sketch {
         // prevent double tap
         if (this.isSliderPlaying) return;
         this.isSliderPlaying = true;
+        this.slideActiveClass = "b--clip-slider-a__list-group__list-item--is-active";
         // get right
         var isRight = payload.element.classList.contains("m--right");
         // get current active
-        var currentActive = document.querySelector(".slide.s--active");
-        var currentDot = document.querySelector(".pagination-item--active");
-        this.JSUTIL.removeClass(currentDot, "pagination-item--active");
+        var currentActive = document.querySelector(".slide." + this.slideActiveClass);
+        var currentDot = document.querySelector("." + this.dotActiveClass);
+        this.JSUTIL.removeClass(currentDot, this.dotActiveClass);
         var index = payload.clickedDot + 1;
         var newActive = document.querySelector(".slide-" + index);
-        this.JSUTIL.addClass(payload.element, "pagination-item--active");
+        this.JSUTIL.addClass(payload.element, this.dotActiveClass);
         // currentActive.classList.remove('s--active', 's--active-prev');
-        this.JSUTIL.removeClass(currentActive, "s--active", "s--active-prev");
+        this.JSUTIL.removeClass(currentActive, this.slideActiveClass, "s--active-prev");
         this.JSUTIL.removeClass(document.querySelector(".slide.s--prev"), "s--prev");
         this.JSUTIL.addClass(newActive, "s--active");
         if (!isRight) this.JSUTIL.addClass(newActive, "s--active-prev");
@@ -621,19 +623,16 @@ class Sketch {
             this.isSliderPlaying = false;
         }, this.sliderSpeed * 0.5);
     }
-    handlePlagination(payload) {
-        console.log(payload);
-    }
     handleSlide(payload) {
         // prevent double tap
         if (this.isSliderPlaying) return;
         this.isSliderPlaying = true;
         // get right
         console.log(payload.element);
-        var isRight = payload.element.classList.contains("m--right");
+        var isRight = payload.element.classList.contains("b--clip-slider-a__controls__item--next");
         // get current active
         var currentActive = document.querySelector(".slide.s--active");
-        var currentDotActive = document.querySelector(".pagination-item--active");
+        var currentDotActive = document.querySelector("." + this.dotActiveClass);
         var index = +currentActive.dataset.slide;
         isRight ? index++ : index--;
         if (index < 1) index = this.slidesCount;
@@ -642,9 +641,9 @@ class Sketch {
         var dotActive = document.querySelector('[data-dot="' + index + '"]');
         this.JSUTIL.removeClass(currentActive, "s--active", "s--active-prev");
         this.JSUTIL.removeClass(document.querySelector(".slide.s--prev"), "s--prev");
-        this.JSUTIL.removeClass(currentDotActive, "pagination-item--active");
+        this.JSUTIL.removeClass(currentDotActive, this.dotActiveClass);
         this.JSUTIL.addClass(newActive, "s--active");
-        this.JSUTIL.addClass(dotActive, "pagination-item--active");
+        this.JSUTIL.addClass(dotActive, this.dotActiveClass);
         if (!isRight) this.JSUTIL.addClass(newActive, "s--active-prev");
         var prevIndex = index - 1;
         if (prevIndex < 1) prevIndex = this.slidesCount;
@@ -665,10 +664,10 @@ class Sketch {
                 this.x = e.detail.x;
                 this.y = e.detail.y;
                 if (this.directions.left) this.handleSlide({
-                    element: document.querySelector(".m--right")
+                    element: document.querySelector(".b--clip-slider-a__controls__item--next")
                 });
                 if (this.directions.right) this.handleSlide({
-                    element: document.querySelector(".m--left")
+                    element: document.querySelector(".b--clip-slider-a__controls__item--prev")
                 });
             });
         }
@@ -677,41 +676,12 @@ class Sketch {
 exports.default = Sketch;
 var config = {
     parent: document.getElementById("clipSlider"),
-    dots: true
+    dots: true,
+    controls: true
 };
 new Sketch(config);
 
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","@andresclua/jsutil":"g3iME","swipe-listener":"2nCZO"}],"gkKU3":[function(require,module,exports) {
-exports.interopDefault = function(a) {
-    return a && a.__esModule ? a : {
-        default: a
-    };
-};
-exports.defineInteropFlag = function(a) {
-    Object.defineProperty(a, "__esModule", {
-        value: true
-    });
-};
-exports.exportAll = function(source, dest) {
-    Object.keys(source).forEach(function(key) {
-        if (key === "default" || key === "__esModule" || dest.hasOwnProperty(key)) return;
-        Object.defineProperty(dest, key, {
-            enumerable: true,
-            get: function() {
-                return source[key];
-            }
-        });
-    });
-    return dest;
-};
-exports.export = function(dest, destName, get) {
-    Object.defineProperty(dest, destName, {
-        enumerable: true,
-        get: get
-    });
-};
-
-},{}],"g3iME":[function(require,module,exports) {
+},{"@andresclua/jsutil":"g3iME","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","swipe-listener":"2nCZO"}],"g3iME":[function(require,module,exports) {
 module.exports = require("./src/js_helper");
 
 },{"./src/js_helper":"iC7g6"}],"iC7g6":[function(require,module,exports) {
@@ -864,7 +834,37 @@ class JSUTIL {
 }
 exports.default = JSUTIL;
 
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"2nCZO":[function(require,module,exports) {
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"gkKU3":[function(require,module,exports) {
+exports.interopDefault = function(a) {
+    return a && a.__esModule ? a : {
+        default: a
+    };
+};
+exports.defineInteropFlag = function(a) {
+    Object.defineProperty(a, "__esModule", {
+        value: true
+    });
+};
+exports.exportAll = function(source, dest) {
+    Object.keys(source).forEach(function(key) {
+        if (key === "default" || key === "__esModule" || dest.hasOwnProperty(key)) return;
+        Object.defineProperty(dest, key, {
+            enumerable: true,
+            get: function() {
+                return source[key];
+            }
+        });
+    });
+    return dest;
+};
+exports.export = function(dest, destName, get) {
+    Object.defineProperty(dest, destName, {
+        enumerable: true,
+        get: get
+    });
+};
+
+},{}],"2nCZO":[function(require,module,exports) {
 "use strict";
 var _extends = Object.assign || function(a) {
     for(var b, c = 1; c < arguments.length; c++)for(var d in b = arguments[c], b)Object.prototype.hasOwnProperty.call(b, d) && (a[d] = b[d]);
