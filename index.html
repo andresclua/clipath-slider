@@ -6,55 +6,48 @@
 	<link rel="stylesheet" href="src/scss/index.scss" />
 </head>
 <body>
-	<div class="slider" id="clipSlider">
-		<!-- slides -->
-		<div class="slider__slides">
+	<div class="slider b--clip-slider-a" id="clipSlider">
+		<!-- slides start -->
+		<div class="slider__slides b--clip-slider-a__list-group">
 
-		  <div class="slide s--active">
-			<div class="slide__inner" style="background-image:url('https://s3-us-west-2.amazonaws.com/s.cdpn.io/142996/onepgscr-1.jpg')">
-			  <div class="slide__content">
-				<h2 class="slide__heading">Simple Animation</h2>
-				<p class="slide__text">Clip-path magic!</p>
-			  </div>
-			</div>
-		  </div>
+			<div class="b--clip-slider-a__list-group__list-item slide s--active">
+				
+				<div class="b--card-a" style="background-image:url('https://s3-us-west-2.amazonaws.com/s.cdpn.io/142996/onepgscr-1.jpg')">
+					<div class="b--card-a__content">
+						<h2 class="b--card-a__content__title">Simple Animation</h2>
+						<p class="b--card-a__content__subtitle">Clip-path magic!</p>
+					</div>
+				</div>
 
-		  <div class="slide">
-			<div class="slide__inner" style="background-image:url('https://s3-us-west-2.amazonaws.com/s.cdpn.io/142996/onepgscr-2.jpg')">
-			  <div class="slide__content">
-				<h2 class="slide__heading">Very Stylish Effect!</h2>
-				<p class="slide__text">It looks cool, isn't it?</p>
-			  </div>
 			</div>
-		  </div>
+
+			<div class="b--clip-slider-a__list-group__list-item slide">
+				<div class="b--card-a" style="background-image:url('https://s3-us-west-2.amazonaws.com/s.cdpn.io/142996/onepgscr-2.jpg')">
+					<div class="b--card-a__content">
+						<h2 class="b--card-a__content__title">Simple Animation 2</h2>
+						<p class="b--card-a__content__subtitle">Clip-path magic! 2</p>
+					</div>
+				</div>
+			</div>
 		  
-
-		  <div class="slide">
-			<div class="slide__inner" style="background-image:url('https://s3-us-west-2.amazonaws.com/s.cdpn.io/142996/onepgscr-3.jpg')">
-			  <div class="slide__content">
-				<h2 class="slide__heading">Limited browser support</h2>
-				<p class="slide__text">Forget about IE/Edge and FF</p>
-			  </div>
-			</div>
-		  </div>
-		  
-		  <div class="slide s--prev">
-			<div class="slide__inner" style="background-image:url('https://s3-us-west-2.amazonaws.com/s.cdpn.io/142996/onepgscr-4.jpg')" >
-			  <div class="slide__content">
-				<h2 class="slide__heading">Check my other stuff!</h2>
-				<p class="slide__text"><a href="https://codepen.io/suez/pens/public/" target="_blank">Other demos</a> and <a href="https://twitter.com/NikolayTalanov" target="_blank">Twitter</a></p>
-			  </div>
-			</div>
-		  </div>
-		</div>
-
 		<!-- slides end -->
-		<div class="slider__control">
-		  <div class="slider__control-line"></div>
+
+		<!-- if controls are enabled -->
+		<div class="b--clip-slider-a__controls">
+			<button class="b--clip-slider-a__controls__item--prev b--clip-slider-a__controls__item">
+				Next
+		  	</button>
+		 	<button class="b--clip-slider-a__controls__item--next b--clip-slider-a__controls__item">
+				Prev
+		  	</button>
 		</div>
-		<div class="slider__control slider__control--right m--right">
-		  <div class="slider__control-line"></div>
-		</div>
+		<!-- if controls are enabled -->
+
+		<ul class="b--clip-slider-a__pagination">
+			<li class="b--clip-slider-a__pagination__item"></li>
+			<li class="b--clip-slider-a__pagination__item"></li>
+			<li class="b--clip-slider-a__pagination__item"></li>
+		</ul>
 
 	  </div>
 	<script src="src/js/app.js" type="module"></script>
