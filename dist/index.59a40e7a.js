@@ -543,13 +543,16 @@ class Sketch {
         this.JSUTIL = new (0, _jsutilDefault.default)();
         this.options = config;
         this.slides = document.querySelectorAll(".slide");
-        this.slideControl = document.querySelectorAll(".slider__control");
+        this.slideControl = document.querySelectorAll(".b--clip-slider-a__controls__item");
+        this.slideActiveClass = "b--clip-slider-a__list-group__list-item--is-active";
+        this.slideActiveClassPrev = "b--clip-slider-a__list-group__list-item--prev";
+        this.dotActiveClass = "b--clip-slider-a__pagination__item--is-active";
+        this.dotItem = "b--clip-slider-a__pagination__item";
         this.slidesCount = this.slides.length;
         this.sliderSpeed = 1300; // needs to match with SCSS Variable
         this.isSliderPlaying = false;
         this.init();
         this.events();
-        this.registerSwipe();
     }
     init() {
         // Create all slides with default configuration
@@ -565,7 +568,6 @@ class Sketch {
         // add comment div
         let comment = document.createComment(" add pagination");
         this.options.parent.appendChild(comment);
-        this.dotActiveClass = "b--clip-slider-a__pagination__item--is-active";
         // add parent ul
         let ul = document.createElement("ul");
         ul.setAttribute("id", "pagination");
@@ -573,7 +575,7 @@ class Sketch {
         this.options.parent.appendChild(ul);
         for(let i = 0; i < this.slidesCount; i++){
             var li = document.createElement("li");
-            li.setAttribute("class", "b--clip-slider-a__pagination__item");
+            li.setAttribute("class", this.dotItem);
             li.setAttribute("data-dot", parseInt(i + 1));
             if (i == 0) this.JSUTIL.addClass(li, this.dotActiveClass);
             ul.appendChild(li);
@@ -587,7 +589,7 @@ class Sketch {
                 }));
         });
         if (this.options.dots) {
-            this.dotControl = document.querySelectorAll(".b--clip-slider-a__pagination__item");
+            this.dotControl = document.querySelectorAll("." + this.dotItem);
             this.dotControl.forEach((element, index)=>{
                 element.addEventListener("click", (event)=>this.goToSlide({
                         event: event,
@@ -596,34 +598,42 @@ class Sketch {
                     }));
             });
         }
+        this.listener = (0, _swipeListenerDefault.default)(this.options.parent);
+        this.options.parent.addEventListener("swipe", (e)=>{
+            this.directions = e.detail.directions;
+            if (this.directions.left) this.handleSlide({
+                element: document.querySelector(".b--clip-slider-a__controls__item--next")
+            });
+            if (this.directions.right) this.handleSlide({
+                element: document.querySelector(".b--clip-slider-a__controls__item--prev")
+            });
+        });
     }
     goToSlide(payload) {
         // prevent double tap
         if (this.isSliderPlaying) return;
         this.isSliderPlaying = true;
-        this.slideActiveClass = "b--clip-slider-a__list-group__list-item--is-active";
         // get right
         var isRight = payload.element.classList.contains("b--clip-slider-a__controls__item--next");
         // get current active
-        var currentActive = document.querySelector(".slide." + this.slideActiveClass);
+        var currentActive = document.querySelector(".b--clip-slider-a__list-group__list-item." + this.slideActiveClass);
         var currentDot = document.querySelector("." + this.dotActiveClass);
         this.JSUTIL.removeClass(currentDot, this.dotActiveClass);
         var index = payload.clickedDot + 1;
         var newActive = document.querySelector(".slide-" + index);
         this.JSUTIL.addClass(payload.element, this.dotActiveClass);
-        // currentActive.classList.remove('s--active', 's--active-prev');
-        this.JSUTIL.removeClass(currentActive, this.slideActiveClass, "s--active-prev");
-        this.JSUTIL.removeClass(document.querySelector(".slide.s--prev"), "s--prev");
-        this.JSUTIL.addClass(newActive, "s--active");
-        if (!isRight) this.JSUTIL.addClass(newActive, "s--active-prev");
+        this.JSUTIL.removeClass(currentActive, this.slideActiveClass, this.slideActiveClassPrev);
+        this.JSUTIL.addClass(newActive, this.slideActiveClass);
+        if (!isRight) this.JSUTIL.addClass(newActive, this.slideActiveClassPrev);
         var prevIndex = index - 1;
         if (prevIndex < 1) prevIndex = this.slidesCount;
-        this.JSUTIL.addClass(document.querySelector(".slide-" + prevIndex), "s--prev");
+        this.JSUTIL.addClass(document.querySelector(".slide-" + prevIndex), this.slideActiveClassPrev);
         setTimeout(()=>{
             this.isSliderPlaying = false;
         }, this.sliderSpeed * 0.5);
     }
     handleSlide(payload) {
+        console.log(payload);
         // prevent double tap
         if (this.isSliderPlaying) return;
         this.isSliderPlaying = true;
@@ -631,7 +641,7 @@ class Sketch {
         console.log(payload.element);
         var isRight = payload.element.classList.contains("b--clip-slider-a__controls__item--next");
         // get current active
-        var currentActive = document.querySelector(".slide.s--active");
+        var currentActive = document.querySelector(".b--clip-slider-a__list-group__list-item." + this.slideActiveClass);
         var currentDotActive = document.querySelector("." + this.dotActiveClass);
         var index = +currentActive.dataset.slide;
         isRight ? index++ : index--;
@@ -639,38 +649,17 @@ class Sketch {
         if (index > this.slidesCount) index = 1;
         var newActive = document.querySelector(".slide-" + index);
         var dotActive = document.querySelector('[data-dot="' + index + '"]');
-        this.JSUTIL.removeClass(currentActive, "s--active", "s--active-prev");
-        this.JSUTIL.removeClass(document.querySelector(".slide.s--prev"), "s--prev");
+        this.JSUTIL.removeClass(currentActive, this.slideActiveClass, this.slideActiveClassPrev);
         this.JSUTIL.removeClass(currentDotActive, this.dotActiveClass);
-        this.JSUTIL.addClass(newActive, "s--active");
+        this.JSUTIL.addClass(newActive, this.slideActiveClass);
         this.JSUTIL.addClass(dotActive, this.dotActiveClass);
-        if (!isRight) this.JSUTIL.addClass(newActive, "s--active-prev");
+        if (!isRight) this.JSUTIL.addClass(newActive, this.slideActiveClassPrev);
         var prevIndex = index - 1;
         if (prevIndex < 1) prevIndex = this.slidesCount;
-        this.JSUTIL.addClass(document.querySelector(".slide-" + prevIndex), "s--prev");
+        this.JSUTIL.addClass(document.querySelector(".slide-" + prevIndex), this.slideActiveClassPrev);
         setTimeout(()=>{
             this.isSliderPlaying = false;
         }, this.sliderSpeed * 0.5);
-    }
-    /**
-        * Inits when user is swiping the homepage hero
-        * notes: only on mobile
-        */ registerSwipe() {
-        if (this.JSUTIL.getTypeDevice("touch")) {
-            this.container = document.querySelector("#clipSlider");
-            this.listener = (0, _swipeListenerDefault.default)(this.container);
-            this.container.addEventListener("swipe", (e)=>{
-                this.directions = e.detail.directions;
-                this.x = e.detail.x;
-                this.y = e.detail.y;
-                if (this.directions.left) this.handleSlide({
-                    element: document.querySelector(".b--clip-slider-a__controls__item--next")
-                });
-                if (this.directions.right) this.handleSlide({
-                    element: document.querySelector(".b--clip-slider-a__controls__item--prev")
-                });
-            });
-        }
     }
 }
 exports.default = Sketch;
