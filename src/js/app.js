@@ -1,11 +1,10 @@
 import JSUTIL from '@andresclua/jsutil';
+import SwipeListener from 'swipe-listener';
+
 export default class Sketch {
     constructor(config){
         this.JSUTIL = new JSUTIL();
-        
         this.options = config;
-        console.log(config)
-
         this.slides = document.querySelectorAll('.slide');
         this.slideControl = document.querySelectorAll('.slider__control');
         this.slidesCount = this.slides.length;
@@ -13,13 +12,14 @@ export default class Sketch {
         this.isSliderPlaying = false;
         this.init()
         this.events()
+        this.registerSwipe();
     }
     init(){
 
         // Create all slides with default configuration
         this.slides.forEach((element,index)=>{
             var i = index + 1;
-            element.classList.add('slide-' + i);
+            this.JSUTIL.addClass(element,'slide-' + i);
             element.dataset.slide = i;
         });
 
@@ -44,7 +44,7 @@ export default class Sketch {
             li.setAttribute("class", "pagination-item");
             li.setAttribute("data-dot",  parseInt(i + 1) );
             if(i == 0)
-                li.classList.add("pagination-item--active")
+                this.JSUTIL.addClass(li,"pagination-item--active");
             ul.appendChild(li);
         }
         
@@ -57,7 +57,6 @@ export default class Sketch {
         if(this.options.dots){
             this.dotControl = document.querySelectorAll('.pagination-item');
             this.dotControl.forEach((element,index)=>{
-                console.log(element);
                 element.addEventListener('click',(event) => this.goToSlide({event:event,element:element, clickedDot:index}) );
             });
         }
@@ -72,22 +71,22 @@ export default class Sketch {
         // get current active
         var currentActive = document.querySelector('.slide.s--active');
         var currentDot = document.querySelector('.pagination-item--active');
-        currentDot.classList.remove('pagination-item--active')
+        this.JSUTIL.removeClass(currentDot,"pagination-item--active");
 
         var index = payload.clickedDot + 1;
         var newActive = document.querySelector('.slide-' + index);
-        payload.element.classList.add('pagination-item--active')
+        this.JSUTIL.addClass(payload.element,"pagination-item--active");
 
-        currentActive.classList.remove('s--active', 's--active-prev');
-        document.querySelector('.slide.s--prev').classList.remove('s--prev');
+        // currentActive.classList.remove('s--active', 's--active-prev');
+        this.JSUTIL.removeClass(currentActive,'s--active', 's--active-prev');
+        this.JSUTIL.removeClass( document.querySelector('.slide.s--prev'),'s--prev');
 
-        newActive.classList.add('s--active');
-        if (!isRight) newActive.classList.add('s--active-prev');
+        this.JSUTIL.addClass( newActive,'s--active');
+        if (!isRight) this.JSUTIL.addClass( newActive,'s--active-prev');
 
         var prevIndex = index - 1;
         if (prevIndex < 1) prevIndex = this.slidesCount;
-
-        document.querySelector('.slide-' + prevIndex).classList.add('s--prev');
+        this.JSUTIL.addClass(  document.querySelector('.slide-' + prevIndex),'s--prev');
 
         setTimeout(()=>{
             this.isSliderPlaying = false;
@@ -104,6 +103,7 @@ export default class Sketch {
         this.isSliderPlaying = true;
     
         // get right
+        console.log(payload.element);
         var isRight = payload.element.classList.contains('m--right');
         
         // get current active
@@ -116,26 +116,52 @@ export default class Sketch {
         if (index > this.slidesCount) index = 1;
         var newActive = document.querySelector('.slide-' + index);
         var dotActive = document.querySelector('[data-dot="' + index + '"]' );
-        currentActive.classList.remove('s--active', 's--active-prev');
-        document.querySelector('.slide.s--prev').classList.remove('s--prev');
-        currentDotActive.classList.remove('pagination-item--active');
+        this.JSUTIL.removeClass(  currentActive,'s--active', 's--active-prev');
+        this.JSUTIL.removeClass(  document.querySelector('.slide.s--prev'),'s--prev');
+        this.JSUTIL.removeClass( currentDotActive,'pagination-item--active');
 
-        newActive.classList.add('s--active');
-        dotActive.classList.add('pagination-item--active');
-        if (!isRight) newActive.classList.add('s--active-prev');
+        this.JSUTIL.addClass( newActive,'s--active');
+        this.JSUTIL.addClass( dotActive,'pagination-item--active');
+        if (!isRight) this.JSUTIL.addClass( newActive,'s--active-prev');
+      
 
 
         var prevIndex = index - 1;
         if (prevIndex < 1) prevIndex = this.slidesCount;
 
-        document.querySelector('.slide-' + prevIndex).classList.add('s--prev');
+        this.JSUTIL.addClass( document.querySelector('.slide-' + prevIndex),'s--prev');
 
         setTimeout(()=>{
             this.isSliderPlaying = false;
         },this.sliderSpeed*0.5)
 
     }
+    /**
+        * Inits when user is swiping the homepage hero
+        * notes: only on mobile
+        */
+    registerSwipe(){
+        if( this.JSUTIL.getTypeDevice('touch')){
+            this.container = document.querySelector('#clipSlider');
+            this.listener = SwipeListener(this.container);
+            this.container.addEventListener('swipe', (e) => {
+                this.directions = e.detail.directions;
+                this.x = e.detail.x;
+                this.y = e.detail.y;
 
+                if (this.directions.left) { // goes to next
+                    this.handleSlide({
+                        element : document.querySelector('.m--right')
+                    });
+                }
+                if (this.directions.right) { // goes to previous
+                    this.handleSlide({
+                        element : document.querySelector('.m--left')
+                    });
+                }
+            });
+        }
+    }
 }
 
 var config = {

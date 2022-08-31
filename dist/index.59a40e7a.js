@@ -536,11 +536,12 @@ var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 var _jsutil = require("@andresclua/jsutil");
 var _jsutilDefault = parcelHelpers.interopDefault(_jsutil);
+var _swipeListener = require("swipe-listener");
+var _swipeListenerDefault = parcelHelpers.interopDefault(_swipeListener);
 class Sketch {
     constructor(config){
         this.JSUTIL = new (0, _jsutilDefault.default)();
         this.options = config;
-        console.log(config);
         this.slides = document.querySelectorAll(".slide");
         this.slideControl = document.querySelectorAll(".slider__control");
         this.slidesCount = this.slides.length;
@@ -548,12 +549,13 @@ class Sketch {
         this.isSliderPlaying = false;
         this.init();
         this.events();
+        this.registerSwipe();
     }
     init() {
         // Create all slides with default configuration
         this.slides.forEach((element, index)=>{
             var i = index + 1;
-            element.classList.add("slide-" + i);
+            this.JSUTIL.addClass(element, "slide-" + i);
             element.dataset.slide = i;
         });
         // if dots where selected create pagination
@@ -572,7 +574,7 @@ class Sketch {
             var li = document.createElement("li");
             li.setAttribute("class", "pagination-item");
             li.setAttribute("data-dot", parseInt(i + 1));
-            if (i == 0) li.classList.add("pagination-item--active");
+            if (i == 0) this.JSUTIL.addClass(li, "pagination-item--active");
             ul.appendChild(li);
         }
     }
@@ -586,7 +588,6 @@ class Sketch {
         if (this.options.dots) {
             this.dotControl = document.querySelectorAll(".pagination-item");
             this.dotControl.forEach((element, index)=>{
-                console.log(element);
                 element.addEventListener("click", (event)=>this.goToSlide({
                         event: event,
                         element: element,
@@ -604,17 +605,18 @@ class Sketch {
         // get current active
         var currentActive = document.querySelector(".slide.s--active");
         var currentDot = document.querySelector(".pagination-item--active");
-        currentDot.classList.remove("pagination-item--active");
+        this.JSUTIL.removeClass(currentDot, "pagination-item--active");
         var index = payload.clickedDot + 1;
         var newActive = document.querySelector(".slide-" + index);
-        payload.element.classList.add("pagination-item--active");
-        currentActive.classList.remove("s--active", "s--active-prev");
-        document.querySelector(".slide.s--prev").classList.remove("s--prev");
-        newActive.classList.add("s--active");
-        if (!isRight) newActive.classList.add("s--active-prev");
+        this.JSUTIL.addClass(payload.element, "pagination-item--active");
+        // currentActive.classList.remove('s--active', 's--active-prev');
+        this.JSUTIL.removeClass(currentActive, "s--active", "s--active-prev");
+        this.JSUTIL.removeClass(document.querySelector(".slide.s--prev"), "s--prev");
+        this.JSUTIL.addClass(newActive, "s--active");
+        if (!isRight) this.JSUTIL.addClass(newActive, "s--active-prev");
         var prevIndex = index - 1;
         if (prevIndex < 1) prevIndex = this.slidesCount;
-        document.querySelector(".slide-" + prevIndex).classList.add("s--prev");
+        this.JSUTIL.addClass(document.querySelector(".slide-" + prevIndex), "s--prev");
         setTimeout(()=>{
             this.isSliderPlaying = false;
         }, this.sliderSpeed * 0.5);
@@ -627,6 +629,7 @@ class Sketch {
         if (this.isSliderPlaying) return;
         this.isSliderPlaying = true;
         // get right
+        console.log(payload.element);
         var isRight = payload.element.classList.contains("m--right");
         // get current active
         var currentActive = document.querySelector(".slide.s--active");
@@ -637,18 +640,38 @@ class Sketch {
         if (index > this.slidesCount) index = 1;
         var newActive = document.querySelector(".slide-" + index);
         var dotActive = document.querySelector('[data-dot="' + index + '"]');
-        currentActive.classList.remove("s--active", "s--active-prev");
-        document.querySelector(".slide.s--prev").classList.remove("s--prev");
-        currentDotActive.classList.remove("pagination-item--active");
-        newActive.classList.add("s--active");
-        dotActive.classList.add("pagination-item--active");
-        if (!isRight) newActive.classList.add("s--active-prev");
+        this.JSUTIL.removeClass(currentActive, "s--active", "s--active-prev");
+        this.JSUTIL.removeClass(document.querySelector(".slide.s--prev"), "s--prev");
+        this.JSUTIL.removeClass(currentDotActive, "pagination-item--active");
+        this.JSUTIL.addClass(newActive, "s--active");
+        this.JSUTIL.addClass(dotActive, "pagination-item--active");
+        if (!isRight) this.JSUTIL.addClass(newActive, "s--active-prev");
         var prevIndex = index - 1;
         if (prevIndex < 1) prevIndex = this.slidesCount;
-        document.querySelector(".slide-" + prevIndex).classList.add("s--prev");
+        this.JSUTIL.addClass(document.querySelector(".slide-" + prevIndex), "s--prev");
         setTimeout(()=>{
             this.isSliderPlaying = false;
         }, this.sliderSpeed * 0.5);
+    }
+    /**
+        * Inits when user is swiping the homepage hero
+        * notes: only on mobile
+        */ registerSwipe() {
+        if (this.JSUTIL.getTypeDevice("touch")) {
+            this.container = document.querySelector("#clipSlider");
+            this.listener = (0, _swipeListenerDefault.default)(this.container);
+            this.container.addEventListener("swipe", (e)=>{
+                this.directions = e.detail.directions;
+                this.x = e.detail.x;
+                this.y = e.detail.y;
+                if (this.directions.left) this.handleSlide({
+                    element: document.querySelector(".m--right")
+                });
+                if (this.directions.right) this.handleSlide({
+                    element: document.querySelector(".m--left")
+                });
+            });
+        }
     }
 }
 exports.default = Sketch;
@@ -658,7 +681,7 @@ var config = {
 };
 new Sketch(config);
 
-},{"@andresclua/jsutil":"g3iME","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"g3iME":[function(require,module,exports) {
+},{"@andresclua/jsutil":"g3iME","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","swipe-listener":"2nCZO"}],"g3iME":[function(require,module,exports) {
 module.exports = require("./src/js_helper");
 
 },{"./src/js_helper":"iC7g6"}],"iC7g6":[function(require,module,exports) {
@@ -840,6 +863,143 @@ exports.export = function(dest, destName, get) {
         get: get
     });
 };
+
+},{}],"2nCZO":[function(require,module,exports) {
+"use strict";
+var _extends = Object.assign || function(a) {
+    for(var b, c = 1; c < arguments.length; c++)for(var d in b = arguments[c], b)Object.prototype.hasOwnProperty.call(b, d) && (a[d] = b[d]);
+    return a;
+}, SwipeListener = function(a, b) {
+    if (a) {
+        "undefined" != typeof window && function() {
+            function a(a, b) {
+                b = b || {
+                    bubbles: !1,
+                    cancelable: !1,
+                    detail: void 0
+                };
+                var c = document.createEvent("CustomEvent");
+                return c.initCustomEvent(a, b.bubbles, b.cancelable, b.detail), c;
+            }
+            return "function" != typeof window.CustomEvent && void (a.prototype = window.Event.prototype, window.CustomEvent = a);
+        }();
+        b || (b = {}), b = _extends({}, {
+            minHorizontal: 10,
+            minVertical: 10,
+            deltaHorizontal: 3,
+            deltaVertical: 5,
+            preventScroll: !1,
+            lockAxis: !0,
+            touch: !0,
+            mouse: !0
+        }, b);
+        var c = [], d = !1, e = function() {
+            d = !0;
+        }, f = function(a) {
+            d = !1, h(a);
+        }, g = function(a) {
+            d && (a.changedTouches = [
+                {
+                    clientX: a.clientX,
+                    clientY: a.clientY
+                }
+            ], i(a));
+        };
+        b.mouse && (a.addEventListener("mousedown", e), a.addEventListener("mouseup", f), a.addEventListener("mousemove", g));
+        var h = function(d) {
+            var e = Math.abs, f = Math.max, g = Math.min;
+            if (c.length) {
+                for(var h = "function" == typeof TouchEvent && d instanceof TouchEvent, j = [], k = [], l = {
+                    top: !1,
+                    right: !1,
+                    bottom: !1,
+                    left: !1
+                }, m = 0; m < c.length; m++)j.push(c[m].x), k.push(c[m].y);
+                var i = j[0], n = j[j.length - 1], o = k[0], p = k[k.length - 1], q = {
+                    x: [
+                        i,
+                        n
+                    ],
+                    y: [
+                        o,
+                        p
+                    ]
+                };
+                if (1 < c.length) {
+                    var r = {
+                        detail: _extends({
+                            touch: h,
+                            target: d.target
+                        }, q)
+                    }, s = new CustomEvent("swiperelease", r);
+                    a.dispatchEvent(s);
+                }
+                var t = j[0] - j[j.length - 1], u = "none";
+                u = 0 < t ? "left" : "right";
+                var v, w = g.apply(Math, j), x = f.apply(Math, j);
+                if (e(t) >= b.minHorizontal && ("left" == u ? (v = e(w - j[j.length - 1]), v <= b.deltaHorizontal && (l.left = !0)) : "right" == u && (v = e(x - j[j.length - 1]), v <= b.deltaHorizontal && (l.right = !0))), t = k[0] - k[k.length - 1], u = "none", u = 0 < t ? "top" : "bottom", w = g.apply(Math, k), x = f.apply(Math, k), e(t) >= b.minVertical && ("top" == u ? (v = e(w - k[k.length - 1]), v <= b.deltaVertical && (l.top = !0)) : "bottom" == u && (v = e(x - k[k.length - 1]), v <= b.deltaVertical && (l.bottom = !0))), c = [], l.top || l.right || l.bottom || l.left) {
+                    b.lockAxis && ((l.left || l.right) && e(i - n) > e(o - p) ? l.top = l.bottom = !1 : (l.top || l.bottom) && e(i - n) < e(o - p) && (l.left = l.right = !1));
+                    var y = {
+                        detail: _extends({
+                            directions: l,
+                            touch: h,
+                            target: d.target
+                        }, q)
+                    }, z = new CustomEvent("swipe", y);
+                    a.dispatchEvent(z);
+                } else {
+                    var A = new CustomEvent("swipecancel", {
+                        detail: _extends({
+                            touch: h,
+                            target: d.target
+                        }, q)
+                    });
+                    a.dispatchEvent(A);
+                }
+            }
+        }, i = function(d) {
+            var e = d.changedTouches[0];
+            if (c.push({
+                x: e.clientX,
+                y: e.clientY
+            }), 1 < c.length) {
+                var f = c[0].x, g = c[c.length - 1].x, h = c[0].y, i = c[c.length - 1].y, j = {
+                    detail: {
+                        x: [
+                            f,
+                            g
+                        ],
+                        y: [
+                            h,
+                            i
+                        ],
+                        touch: "function" == typeof TouchEvent && d instanceof TouchEvent,
+                        target: d.target
+                    }
+                }, k = new CustomEvent("swiping", j), l = !0 === b.preventScroll || "function" == typeof b.preventScroll && b.preventScroll(k);
+                l && d.preventDefault(), a.dispatchEvent(k);
+            }
+        }, j = !1;
+        try {
+            var k = Object.defineProperty({}, "passive", {
+                get: function() {
+                    j = {
+                        passive: !b.preventScroll
+                    };
+                }
+            });
+            window.addEventListener("testPassive", null, k), window.removeEventListener("testPassive", null, k);
+        } catch (a1) {}
+        return b.touch && (a.addEventListener("touchmove", i, j), a.addEventListener("touchend", h)), {
+            off: function() {
+                a.removeEventListener("touchmove", i, j), a.removeEventListener("touchend", h), a.removeEventListener("mousedown", e), a.removeEventListener("mouseup", f), a.removeEventListener("mousemove", g);
+            }
+        };
+    }
+};
+"undefined" != typeof module.exports ? (module.exports = SwipeListener, module.exports.default = SwipeListener) : "function" == typeof define && define.amd ? define([], function() {
+    return SwipeListener;
+}) : window.SwipeListener = SwipeListener;
 
 },{}]},["7ZoMj","8lRBv"], "8lRBv", "parcelRequire94c2")
 
