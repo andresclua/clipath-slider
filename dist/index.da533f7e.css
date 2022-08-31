@@ -163,7 +163,6 @@ body {
   width: 100%;
   text-align: center;
   z-index: 50;
-  background-color: red;
   padding: 1rem;
   position: absolute;
   bottom: 0;
@@ -180,7 +179,7 @@ body {
 }
 
 .pagination-item--active {
-  background: #00f;
+  background: #2da6ff;
 }
 
 /*# sourceMappingURL=index.da533f7e.css.map */
