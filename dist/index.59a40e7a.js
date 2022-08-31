@@ -603,7 +603,7 @@ class Sketch {
         this.isSliderPlaying = true;
         this.slideActiveClass = "b--clip-slider-a__list-group__list-item--is-active";
         // get right
-        var isRight = payload.element.classList.contains("m--right");
+        var isRight = payload.element.classList.contains("b--clip-slider-a__controls__item--next");
         // get current active
         var currentActive = document.querySelector(".slide." + this.slideActiveClass);
         var currentDot = document.querySelector("." + this.dotActiveClass);
