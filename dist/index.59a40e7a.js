@@ -142,7 +142,7 @@
       this[globalName] = mainExports;
     }
   }
-})({"7wCVa":[function(require,module,exports) {
+})({"7ZoMj":[function(require,module,exports) {
 "use strict";
 var global = arguments[3];
 var HMR_HOST = null;
@@ -593,7 +593,7 @@ var config = {
 };
 new Sketch(config);
 
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"1ncnq","@andresclua/jsutil":"g3iME"}],"1ncnq":[function(require,module,exports) {
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","@andresclua/jsutil":"g3iME"}],"gkKU3":[function(require,module,exports) {
 exports.interopDefault = function(a) {
     return a && a.__esModule ? a : {
         default: a
@@ -776,6 +776,6 @@ class JSUTIL {
 }
 exports.default = JSUTIL;
 
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"1ncnq"}]},["7wCVa","8lRBv"], "8lRBv", "parcelRequire94c2")
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}]},["7ZoMj","8lRBv"], "8lRBv", "parcelRequire94c2")
 
 //# sourceMappingURL=index.59a40e7a.js.map
