@@ -54,24 +54,27 @@
         &:hover {
           background-color: #2da6ff;
         }
+        
+
         &__item{
           z-index: 50;
           position:absolute;
           top:50%;
-          width:30px;
-          height: 30px;
+          width: 60px;
+          height: 60px;
+          cursor: pointer;
+          background: #fff;
+          border-radius: 50%;
+          transition: background-color .3s;
+          position: absolute;
           &--prev{
-            background:magenta;
-            left:20%;
-            transform-origin: 1px 0;
-            transform: rotate(45deg);
+            left:10%;
             &:nth-child(2) {
               transform: translateY(1px) rotate(135deg);
             }
           }
           &--next{
-            left: 90%;
-            background:green;
+            right: 10%;
           }
         }
       }

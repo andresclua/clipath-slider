@@ -53,17 +53,18 @@ body {
 
 .b--clip-slider-a__controls__item {
   z-index: 50;
-  width: 30px;
-  height: 30px;
+  width: 60px;
+  height: 60px;
+  cursor: pointer;
+  background: #fff;
+  border-radius: 50%;
+  transition: background-color .3s;
   position: absolute;
   top: 50%;
 }
 
 .b--clip-slider-a__controls__item--prev {
-  transform-origin: 1px 0;
-  background: #f0f;
-  left: 20%;
-  transform: rotate(45deg);
+  left: 10%;
 }
 
 .b--clip-slider-a__controls__item--prev:nth-child(2) {
@@ -71,8 +72,7 @@ body {
 }
 
 .b--clip-slider-a__controls__item--next {
-  background: green;
-  left: 90%;
+  right: 10%;
 }
 
 .b--clip-slider-a__pagination {
