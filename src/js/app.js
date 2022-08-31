@@ -42,7 +42,7 @@ export default class Sketch {
         for (let i = 0; i <this.slidesCount; i++) {
             var li = document.createElement("li");
             li.setAttribute("class", "pagination-item");
-            li.classList.add("dot-" + parseInt(i + 1) );
+            li.setAttribute("data-dot",  parseInt(i + 1) );
             if(i == 0)
                 li.classList.add("pagination-item--active")
             ul.appendChild(li);
@@ -84,7 +84,6 @@ export default class Sketch {
         newActive.classList.add('s--active');
         if (!isRight) newActive.classList.add('s--active-prev');
 
-
         var prevIndex = index - 1;
         if (prevIndex < 1) prevIndex = this.slidesCount;
 
@@ -116,7 +115,7 @@ export default class Sketch {
         if (index < 1) index = this.slidesCount;
         if (index > this.slidesCount) index = 1;
         var newActive = document.querySelector('.slide-' + index);
-        var dotActive = document.querySelector('.dot-' + index );
+        var dotActive = document.querySelector('[data-dot="' + index + '"]' );
         currentActive.classList.remove('s--active', 's--active-prev');
         document.querySelector('.slide.s--prev').classList.remove('s--prev');
         currentDotActive.classList.remove('pagination-item--active');
