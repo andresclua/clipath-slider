@@ -9,6 +9,11 @@ body {
   overflow: hidden;
 }
 
+.pagination {
+  position: fixed;
+  left: 20px;
+}
+
 .slider {
   height: 100vh;
   position: relative;
@@ -152,6 +157,23 @@ body {
 
 .slide__text a {
   color: inherit;
+}
+
+#pagination {
+  z-index: 50;
+  width: 30px;
+  background-color: red;
+  position: fixed;
+  top: 0;
+  left: 0;
+}
+
+#pagination li {
+  width: 30px;
+  height: 30px;
+  background: #fff;
+  margin-bottom: 10px;
+  display: inline-block;
 }
 
 /*# sourceMappingURL=index.da533f7e.css.map */

@@ -539,6 +539,8 @@ var _jsutilDefault = parcelHelpers.interopDefault(_jsutil);
 class Sketch {
     constructor(config){
         this.JSUTIL = new (0, _jsutilDefault.default)();
+        this.options = config;
+        console.log(config);
         this.slides = document.querySelectorAll(".slide");
         this.slideControl = document.querySelectorAll(".slider__control");
         this.slidesCount = this.slides.length;
@@ -547,6 +549,30 @@ class Sketch {
         this.init();
         this.events();
     }
+    init() {
+        // Create all slides with default configuration
+        this.slides.forEach((element, index)=>{
+            var i = index + 1;
+            element.classList.add("slide-" + i);
+            element.dataset.slide = i;
+        });
+        // if dots where selected create pagination
+        if (this.options.dots) this.addDots();
+    }
+    addDots() {
+        // add comment div
+        let comment = document.createComment(" add pagination");
+        this.options.parent.appendChild(comment);
+        // add parent ul
+        let ul = document.createElement("ul");
+        ul.setAttribute("id", "pagination");
+        this.options.parent.appendChild(ul);
+        for(let i = 0; i < this.slidesCount; i++){
+            var li = document.createElement("li");
+            li.setAttribute("class", "pagination-item");
+            ul.appendChild(li);
+        }
+    }
     events() {
         this.slideControl.forEach((element, index)=>{
             element.addEventListener("click", (event)=>this.handleSlide({
@@ -554,6 +580,15 @@ class Sketch {
                     element: element
                 }));
         });
+        if (this.options.dots) document.querySelectorAll(".pagination-item").forEach((element, index)=>{
+            element.addEventListener("click", (event)=>this.handlePlagination({
+                    event: event,
+                    element: element
+                }));
+        });
+    }
+    handlePlagination(payload) {
+        console.log(payload);
     }
     handleSlide(payload) {
         // prevent double tap
@@ -579,17 +614,11 @@ class Sketch {
             this.isSliderPlaying = false;
         }, this.sliderSpeed * 0.5);
     }
-    init() {
-        this.slides.forEach((element, index)=>{
-            var i = index + 1;
-            element.classList.add("slide-" + i);
-            element.dataset.slide = i;
-        });
-    }
 }
 exports.default = Sketch;
 var config = {
-    parent: document.getElementById("clipSlider")
+    parent: document.getElementById("clipSlider"),
+    dots: true
 };
 new Sketch(config);
 

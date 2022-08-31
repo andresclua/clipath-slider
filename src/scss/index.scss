@@ -12,7 +12,10 @@
   $numOfSlides: 5;
   $slidingAT: 1.3s;
   $controlSize: 60px;
-  
+  .pagination{
+    position:fixed;
+    left: 20px;
+  }
   .slider {
     position: relative;
     height: 100vh;
@@ -115,13 +118,6 @@
       }
     }
   
-    // @for $i from 1 through $numOfSlides {
-    //   &:nth-child(#{$i}) {
-    //     .slide__inner {
-    //       background-image: url('https://s3-us-west-2.amazonaws.com/s.cdpn.io/142996/onepgscr-#{$i+1}.jpg');
-    //     }
-    //   }
-    // }
   
     &__inner {
       position: absolute;
@@ -167,4 +163,24 @@
         color: inherit;
       }
     }
-  }
+
+}
+
+#pagination{
+    position:fixed;
+    left:50px;
+    top:50px;
+    left:0;
+    top:0;
+    background-color: red;
+    z-index: 50;
+    width:30px;
+    li{
+        display:inline-block;
+        width:30px;
+        height: 30px;
+        background:white;
+        margin-bottom: 10px;
+        
+    }
+}
