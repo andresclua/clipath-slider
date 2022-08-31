@@ -566,10 +566,13 @@ class Sketch {
         // add parent ul
         let ul = document.createElement("ul");
         ul.setAttribute("id", "pagination");
+        ul.setAttribute("class", "pagination");
         this.options.parent.appendChild(ul);
         for(let i = 0; i < this.slidesCount; i++){
             var li = document.createElement("li");
             li.setAttribute("class", "pagination-item");
+            li.classList.add("dot-" + parseInt(i + 1));
+            if (i == 0) li.classList.add("pagination-item--active");
             ul.appendChild(li);
         }
     }
@@ -580,12 +583,41 @@ class Sketch {
                     element: element
                 }));
         });
-        if (this.options.dots) document.querySelectorAll(".pagination-item").forEach((element, index)=>{
-            element.addEventListener("click", (event)=>this.handlePlagination({
-                    event: event,
-                    element: element
-                }));
-        });
+        if (this.options.dots) {
+            this.dotControl = document.querySelectorAll(".pagination-item");
+            this.dotControl.forEach((element, index)=>{
+                console.log(element);
+                element.addEventListener("click", (event)=>this.goToSlide({
+                        event: event,
+                        element: element,
+                        clickedDot: index
+                    }));
+            });
+        }
+    }
+    goToSlide(payload) {
+        // prevent double tap
+        if (this.isSliderPlaying) return;
+        this.isSliderPlaying = true;
+        // get right
+        var isRight = payload.element.classList.contains("m--right");
+        // get current active
+        var currentActive = document.querySelector(".slide.s--active");
+        var currentDot = document.querySelector(".pagination-item--active");
+        currentDot.classList.remove("pagination-item--active");
+        var index = payload.clickedDot + 1;
+        var newActive = document.querySelector(".slide-" + index);
+        payload.element.classList.add("pagination-item--active");
+        currentActive.classList.remove("s--active", "s--active-prev");
+        document.querySelector(".slide.s--prev").classList.remove("s--prev");
+        newActive.classList.add("s--active");
+        if (!isRight) newActive.classList.add("s--active-prev");
+        var prevIndex = index - 1;
+        if (prevIndex < 1) prevIndex = this.slidesCount;
+        document.querySelector(".slide-" + prevIndex).classList.add("s--prev");
+        setTimeout(()=>{
+            this.isSliderPlaying = false;
+        }, this.sliderSpeed * 0.5);
     }
     handlePlagination(payload) {
         console.log(payload);
@@ -598,14 +630,18 @@ class Sketch {
         var isRight = payload.element.classList.contains("m--right");
         // get current active
         var currentActive = document.querySelector(".slide.s--active");
+        var currentDotActive = document.querySelector(".pagination-item--active");
         var index = +currentActive.dataset.slide;
         isRight ? index++ : index--;
         if (index < 1) index = this.slidesCount;
         if (index > this.slidesCount) index = 1;
         var newActive = document.querySelector(".slide-" + index);
+        var dotActive = document.querySelector(".dot-" + index);
         currentActive.classList.remove("s--active", "s--active-prev");
         document.querySelector(".slide.s--prev").classList.remove("s--prev");
+        currentDotActive.classList.remove("pagination-item--active");
         newActive.classList.add("s--active");
+        dotActive.classList.add("pagination-item--active");
         if (!isRight) newActive.classList.add("s--active-prev");
         var prevIndex = index - 1;
         if (prevIndex < 1) prevIndex = this.slidesCount;
@@ -622,37 +658,7 @@ var config = {
 };
 new Sketch(config);
 
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","@andresclua/jsutil":"g3iME"}],"gkKU3":[function(require,module,exports) {
-exports.interopDefault = function(a) {
-    return a && a.__esModule ? a : {
-        default: a
-    };
-};
-exports.defineInteropFlag = function(a) {
-    Object.defineProperty(a, "__esModule", {
-        value: true
-    });
-};
-exports.exportAll = function(source, dest) {
-    Object.keys(source).forEach(function(key) {
-        if (key === "default" || key === "__esModule" || dest.hasOwnProperty(key)) return;
-        Object.defineProperty(dest, key, {
-            enumerable: true,
-            get: function() {
-                return source[key];
-            }
-        });
-    });
-    return dest;
-};
-exports.export = function(dest, destName, get) {
-    Object.defineProperty(dest, destName, {
-        enumerable: true,
-        get: get
-    });
-};
-
-},{}],"g3iME":[function(require,module,exports) {
+},{"@andresclua/jsutil":"g3iME","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"g3iME":[function(require,module,exports) {
 module.exports = require("./src/js_helper");
 
 },{"./src/js_helper":"iC7g6"}],"iC7g6":[function(require,module,exports) {
@@ -805,6 +811,36 @@ class JSUTIL {
 }
 exports.default = JSUTIL;
 
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}]},["7ZoMj","8lRBv"], "8lRBv", "parcelRequire94c2")
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"gkKU3":[function(require,module,exports) {
+exports.interopDefault = function(a) {
+    return a && a.__esModule ? a : {
+        default: a
+    };
+};
+exports.defineInteropFlag = function(a) {
+    Object.defineProperty(a, "__esModule", {
+        value: true
+    });
+};
+exports.exportAll = function(source, dest) {
+    Object.keys(source).forEach(function(key) {
+        if (key === "default" || key === "__esModule" || dest.hasOwnProperty(key)) return;
+        Object.defineProperty(dest, key, {
+            enumerable: true,
+            get: function() {
+                return source[key];
+            }
+        });
+    });
+    return dest;
+};
+exports.export = function(dest, destName, get) {
+    Object.defineProperty(dest, destName, {
+        enumerable: true,
+        get: get
+    });
+};
+
+},{}]},["7ZoMj","8lRBv"], "8lRBv", "parcelRequire94c2")
 
 //# sourceMappingURL=index.59a40e7a.js.map
