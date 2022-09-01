@@ -634,7 +634,7 @@ class Sketch {
             });
         });
     }
-    goToSlide(payload) {
+    moveToNext(payload, index) {
         // prevent double tap
         if (this.isSliderPlaying) return;
         this.isSliderPlaying = true;
@@ -642,11 +642,7 @@ class Sketch {
         var isRight = payload.element.classList.contains("b--clip-slider-a__controls__item--next");
         // get current active
         var currentActive = document.querySelector(".b--clip-slider-a__list-group__list-item." + this.slideActiveClass);
-        var currentDot = document.querySelector("." + this.dotActiveClass);
-        this.JSUTIL.removeClass(currentDot, this.dotActiveClass);
-        var index = payload.clickedDot + 1;
         var newActive = document.querySelector(".slide-" + index);
-        this.JSUTIL.addClass(payload.element, this.dotActiveClass);
         this.JSUTIL.removeClass(currentActive, this.slideActiveClass, this.slideActiveClassPrev);
         this.JSUTIL.addClass(newActive, this.slideActiveClass);
         if (!isRight) this.JSUTIL.addClass(newActive, this.slideActiveClassPrev);
@@ -657,33 +653,27 @@ class Sketch {
             this.isSliderPlaying = false;
         }, this.sliderSpeed * 0.5);
     }
+    goToSlide(payload) {
+        var currentDot = document.querySelector("." + this.dotActiveClass);
+        this.JSUTIL.removeClass(currentDot, this.dotActiveClass);
+        var currentActive = payload.arrow ? document.querySelector('[data-dot="' + payload.clickedDot + '"]') : payload.element;
+        var index = payload.arrow ? payload.clickedDot : payload.clickedDot + 1;
+        this.JSUTIL.addClass(currentActive, this.dotActiveClass);
+        this.moveToNext(payload, index);
+    }
     handleSlide(payload) {
-        // prevent double tap
-        if (this.isSliderPlaying) return;
-        this.isSliderPlaying = true;
-        // get right
-        console.log(payload.element);
         var isRight = payload.element.classList.contains("b--clip-slider-a__controls__item--next");
         // get current active
         var currentActive = document.querySelector(".b--clip-slider-a__list-group__list-item." + this.slideActiveClass);
-        var currentDotActive = document.querySelector("." + this.dotActiveClass);
         var index = +currentActive.dataset.slide;
         isRight ? index++ : index--;
         if (index < 1) index = this.slidesCount;
         if (index > this.slidesCount) index = 1;
-        var newActive = document.querySelector(".slide-" + index);
-        var dotActive = document.querySelector('[data-dot="' + index + '"]');
-        this.JSUTIL.removeClass(currentActive, this.slideActiveClass, this.slideActiveClassPrev);
-        this.JSUTIL.removeClass(currentDotActive, this.dotActiveClass);
-        this.JSUTIL.addClass(newActive, this.slideActiveClass);
-        this.JSUTIL.addClass(dotActive, this.dotActiveClass);
-        if (!isRight) this.JSUTIL.addClass(newActive, this.slideActiveClassPrev);
-        var prevIndex = index - 1;
-        if (prevIndex < 1) prevIndex = this.slidesCount;
-        this.JSUTIL.addClass(document.querySelector(".slide-" + prevIndex), this.slideActiveClassPrev);
-        setTimeout(()=>{
-            this.isSliderPlaying = false;
-        }, this.sliderSpeed * 0.5);
+        if (this.options.controls) {
+            payload.clickedDot = index;
+            payload.arrow = true;
+            this.goToSlide(payload, index);
+        } else this.moveToNext(payload, index);
     }
 }
 exports.default = Sketch;
