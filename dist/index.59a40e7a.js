@@ -684,7 +684,7 @@ var config = {
 };
 new Sketch(config);
 
-},{"@andresclua/jsutil":"g3iME","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","swipe-listener":"2nCZO"}],"g3iME":[function(require,module,exports) {
+},{"@andresclua/jsutil":"g3iME","swipe-listener":"2nCZO","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"g3iME":[function(require,module,exports) {
 module.exports = require("./src/js_helper");
 
 },{"./src/js_helper":"iC7g6"}],"iC7g6":[function(require,module,exports) {
